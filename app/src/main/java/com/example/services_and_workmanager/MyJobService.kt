@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import android.os.Message
+import android.os.PersistableBundle
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +16,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-class MyJobService: JobService() {
+class MyJobService : JobService() {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
@@ -49,11 +50,26 @@ class MyJobService: JobService() {
         return true
     }
 
-    private fun log(message: String){
+    private fun log(message: String) {
         Log.d("MyService", "MyJobService: $message")
     }
 
-    companion object{
+    companion object {
         const val JOB_ID = 1
+
+        private const val PAGE = "page"
+
+        fun newBundle(page: Int): PersistableBundle {
+            return PersistableBundle().apply {
+                putInt(PAGE, page)
+            }
+        }
+
+        fun newIntent(page: Int): Intent {
+            return Intent().apply {
+                putExtra(PAGE, page)
+            }
+        }
     }
+
 }

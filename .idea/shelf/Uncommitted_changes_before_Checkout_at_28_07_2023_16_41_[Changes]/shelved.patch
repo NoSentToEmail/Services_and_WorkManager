@@ -1,0 +1,113 @@
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\">\r\n\r\n    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\" />\r\n    <uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\" />\r\n\r\n    <application\r\n        android:allowBackup=\"true\"\r\n        android:dataExtractionRules=\"@xml/data_extraction_rules\"\r\n        android:fullBackupContent=\"@xml/backup_rules\"\r\n        android:icon=\"@mipmap/ic_launcher\"\r\n        android:label=\"@string/app_name\"\r\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\r\n        android:supportsRtl=\"true\"\r\n        android:theme=\"@style/Theme.Services_and_WorkManager\"\r\n        tools:targetApi=\"31\">\r\n        <activity\r\n            android:name=\".MainActivity\"\r\n            android:exported=\"true\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n\r\n                <category android:name=\"android.intent.category.LAUNCHER\" />\r\n            </intent-filter>\r\n        </activity>\r\n\r\n        <service android:name=\".MyService\" />\r\n        <service android:name=\".MyforegroundService\" />\r\n        <service android:name=\".MyIntentService\" />\r\n        <service\r\n            android:name=\".MyJobService\"\r\n            android:permission=\"android.permission.BIND_JOB_SERVICE\" />\r\n    </application>\r\n\r\n</manifest>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+--- a/app/src/main/AndroidManifest.xml	(revision 849da3e4ea3fb14515596c2d09ae040fdad7b9df)
++++ b/app/src/main/AndroidManifest.xml	(date 1690551524273)
+@@ -31,6 +31,8 @@
+         <service
+             android:name=".MyJobService"
+             android:permission="android.permission.BIND_JOB_SERVICE" />
++        <service android:name=".MyIntentService2" />
++
+     </application>
+ 
+ </manifest>
+\ No newline at end of file
+Index: app/src/main/java/com/example/services_and_workmanager/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.services_and_workmanager\r\n\r\nimport android.app.Notification\r\nimport android.app.NotificationChannel\r\nimport android.app.NotificationManager\r\nimport android.app.job.JobInfo\r\nimport android.app.job.JobScheduler\r\nimport android.app.job.JobWorkItem\r\nimport android.content.ComponentName\r\nimport android.os.Build\r\nimport androidx.appcompat.app.AppCompatActivity\r\nimport android.os.Bundle\r\nimport android.util.Log\r\nimport androidx.core.app.NotificationCompat\r\nimport androidx.core.content.ContextCompat\r\nimport com.example.services_and_workmanager.databinding.ActivityMainBinding\r\n\r\nclass MainActivity : AppCompatActivity() {\r\n\r\n    private val binding by lazy {\r\n        ActivityMainBinding.inflate(layoutInflater)\r\n    }\r\n    private var page = 0\r\n\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n        setContentView(binding.root)\r\n        Log.d(\"MyService\", \"Start\")\r\n        binding.simpleService.setOnClickListener {\r\n            Log.d(\"MyService\", \"Start\")\r\n            stopService(MyforegroundService.newIntent(this))\r\n            startService(MyService.newIntent(this, 25))\r\n        }\r\n        binding.foregroundService.setOnClickListener {\r\n            ContextCompat.startForegroundService(\r\n                this,\r\n                MyforegroundService.newIntent(this)\r\n            )\r\n        }\r\n        binding.intentService.setOnClickListener {\r\n            ContextCompat.startForegroundService(\r\n                this,\r\n                MyIntentService.newIntent(this)\r\n            )\r\n        }\r\n\r\n        binding.jobScheduler.setOnClickListener {\r\n            val componentName = ComponentName(this, MyJobService::class.java)\r\n\r\n            val jobInfo = JobInfo.Builder(MyJobService.JOB_ID, componentName)\r\n//                .setExtras(MyJobService.newBundle(page++))\r\n                .setRequiresCharging(false)\r\n                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)\r\n//                .setPersisted(true)\r\n                .build()\r\n\r\n            val jobScheduler = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler\r\n\r\n//            jobScheduler.schedule(jobInfo)\r\n            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {\r\n                val intent = MyJobService.newIntent(page++)\r\n\r\n                jobScheduler.enqueue(jobInfo, JobWorkItem(intent))\r\n            }\r\n        }\r\n    }\r\n\r\n//    private fun showNotification(){\r\n//        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager\r\n//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {\r\n//            val notificatioChannel =  NotificationChannel(\r\n//                CHANNEL_ID,\r\n//                CHANNEL_NAME,\r\n//                NotificationManager.IMPORTANCE_DEFAULT\r\n//            )\r\n//            notificationManager.createNotificationChannel(notificatioChannel)\r\n//        }\r\n//\r\n//        val notification = NotificationCompat.Builder(this, CHANNEL_ID)\r\n//            .setContentTitle(\"Title\")\r\n//            .setContentText(\"Text\")\r\n//            .setSmallIcon(R.drawable.ic_launcher_background)\r\n//            .build()\r\n//\r\n//        notificationManager.notify(1, notification)\r\n//    }\r\n//\r\n//    companion object{\r\n//        private const val CHANNEL_ID = \"channel_id\"\r\n//        private const val CHANNEL_NAME = \"channel_name\"\r\n//\r\n//    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/services_and_workmanager/MainActivity.kt b/app/src/main/java/com/example/services_and_workmanager/MainActivity.kt
+--- a/app/src/main/java/com/example/services_and_workmanager/MainActivity.kt	(revision 849da3e4ea3fb14515596c2d09ae040fdad7b9df)
++++ b/app/src/main/java/com/example/services_and_workmanager/MainActivity.kt	(date 1690551576610)
+@@ -61,6 +61,8 @@
+                 val intent = MyJobService.newIntent(page++)
+ 
+                 jobScheduler.enqueue(jobInfo, JobWorkItem(intent))
++            }else {
++                startService(MyIntentService2.newIntent(this, page++))
+             }
+         }
+     }
+Index: app/src/main/java/com/example/services_and_workmanager/MyIntentService2.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/services_and_workmanager/MyIntentService2.kt b/app/src/main/java/com/example/services_and_workmanager/MyIntentService2.kt
+new file mode 100644
+--- /dev/null	(date 1690551524362)
++++ b/app/src/main/java/com/example/services_and_workmanager/MyIntentService2.kt	(date 1690551524362)
+@@ -0,0 +1,64 @@
++package com.example.services_and_workmanager
++
++import android.annotation.SuppressLint
++import android.app.IntentService
++import android.app.Notification
++import android.app.NotificationChannel
++import android.app.NotificationManager
++import android.app.Service
++import android.content.Context
++import android.content.Context.NOTIFICATION_SERVICE
++import android.content.Intent
++import android.os.Build
++import android.os.IBinder
++import android.os.Message
++import android.util.Log
++import androidx.core.app.NotificationCompat
++import androidx.core.content.ContextCompat.getSystemService
++import kotlinx.coroutines.CoroutineScope
++import kotlinx.coroutines.Dispatchers
++import kotlinx.coroutines.cancel
++import kotlinx.coroutines.delay
++import kotlinx.coroutines.launch
++import kotlin.coroutines.CoroutineContext
++
++class MyIntentService2 : IntentService(NAME) {
++
++
++    override fun onCreate() {
++        super.onCreate()
++        log("onCreate")
++        setIntentRedelivery(true)
++    }
++
++    override fun onHandleIntent(intent: Intent?) {
++        log("onHandleIntent")
++        val page = intent?.getIntExtra(PAGE, 0)?: 0
++        for (i in 0 until 25) {
++            Thread.sleep(1000)
++            log("Timer $i $page")
++        }
++    }
++
++
++    override fun onDestroy() {
++        super.onDestroy()
++        log("onDestroy")
++    }
++
++
++    private fun log(message: String) {
++        Log.d("MyService", "MyforegroundService: $message")
++    }
++
++    companion object {
++        private const val NAME = "MyIntentService2"
++        private const val PAGE = "page"
++
++        fun newIntent(context: Context, page: Int): Intent {
++            return Intent(context, MyIntentService2::class.java).apply {
++                putExtra(PAGE, page)
++            }
++        }
++    }
++}
